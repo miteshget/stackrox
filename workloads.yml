@@ -14,7 +14,7 @@
 
 - name: Set SA token
   set_fact:
-    _internal_service_account_tokent: "{{ r_token.stdout }}"
+    _internal_service_account_token: "{{ r_token.stdout }}"
 
 # Registry
 - name: Expose registry
@@ -49,7 +49,7 @@
   set_fact:
     _internal_central_stackrox_token: "{{ r_uri.json.token }}"
 
-- debug: var=_internal_service_account_tokent
+- debug: var=_internal_service_account_token
 - debug: var=_internal_image_registry_route
 - debug: var=_internal_central_stackrox_token
 
