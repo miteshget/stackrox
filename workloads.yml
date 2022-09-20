@@ -52,3 +52,17 @@
 - debug: var=_internal_service_account_tokent
 - debug: var=_internal_image_registry_route
 - debug: var=_internal_central_stackrox_token
+
+- name: Create secret
+  k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: stackrox-token
+        namespace: cicd
+      type: Opaque
+      data:
+        token: "{{ _internal_central_stackrox_token | string | b64encode }}"
+
