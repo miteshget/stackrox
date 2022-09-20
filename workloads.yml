@@ -1,0 +1,54 @@
+- name: Create service account
+  k8s:
+    api_version: v1
+    kind: ServiceAccount
+    name: "{{ _internal_service_account }}"
+    namespace: "{{ _internal_service_account_namespace }}"
+
+- name: Add role
+  command: oc adm policy add-role-to-user registry-admin system:serviceaccount:{{ _internal_service_account_namespace }}:{{ _internal_service_account }}
+
+- name: Get service account token
+  shell: oc sa get-token {{ _internal_service_account }} -n {{ _internal_service_account_namespace }}
+  register: r_token
+
+- name: Set SA token
+  set_fact:
+    _internal_service_account_tokent: "{{ r_token.stdout }}"
+
+# Registry
+- name: Expose registry
+  command: oc patch configs.imageregistry.operator.openshift.io/cluster --type=merge --patch '{"spec":{"defaultRoute":true}}'
+
+- name: Get route
+  k8s_info:
+    api_version: route.openshift.io/v1
+    kind: Route
+    namespace: openshift-image-registry
+  register: r_route
+
+- name: Set image registry route
+  set_fact:
+    _internal_image_registry_route: "{{ r_route.resources.0.spec.host }}"
+
+- name: Stackrox token
+  uri:
+    url: "{{ _internal_centeral_stackrox_url }}/v1/apitokens/generate"
+    user: admin
+    password: "{{ common_password }}"
+    method: POST
+    force_basic_auth: yes
+    validate_certs: false
+    body_format: json
+    headers:
+      Content-Type: application/json
+    body: {"name":"admin","role":"Admin"}
+  register: r_uri
+
+ - name: Set stackrox token
+  set_fact:
+    _internal_central_stackrox_token: "{{ r_uri.json.token }}"
+
+- debug: var=_internal_service_account_tokent
+- debug: var=_internal_image_registry_route
+- debug: var=_internal_central_stackrox_token

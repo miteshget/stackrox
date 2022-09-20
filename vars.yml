@@ -1,0 +1,6 @@
+_internal_service_account: registry-admin
+_internal_service_account_namespace: openshift-config
+_internal_centeral_stackrox_url: https://central-stackrox.apps.cluster-prpzk.prpzk.sandbox471.opentlc.com
+_internal_centeral_stackrox_url: https://central-stackrox.apps.cluster-j47pp.j47pp.sandbox1603.opentlc.com
+
+common_password:
