@@ -66,22 +66,29 @@
       data:
         token: "{{ _internal_central_stackrox_token | string | b64encode }}"
 
-# Note: Did not work
-# - name: Stackrox imagesteam integration
-#   uri:
-#     url: "{{ _internal_centeral_stackrox_url }}/v1/imageintegrations"
-#     user: admin
-#     password: "{{ common_password }}"
-#     method: POST
-#     force_basic_auth: yes
-#     validate_certs: false
-#     body_format: json
-#     headers:
-#       Content-Type: application/json
-#     body: >-
-#             "docker": {
-#             "endpoint": "{{ _internal_image_registry_route }}",
-#             "username": "{{ _internal_service_account }}",
-#             "password": "{{ _internal_service_account_token }}",
-#             "insecure": true
-#             }
+- name: Stackrox imagesteam integration
+  uri:
+    url: "{{ _internal_centeral_stackrox_url }}/v1/imageintegrations"
+    user: admin
+    password: "{{ common_password }}"
+    method: POST
+    force_basic_auth: yes
+    validate_certs: false
+    body_format: json
+    headers:
+      Content-Type: application/json
+    body: >-
+      {
+      "name": "test2",
+      "type": "docker",
+      "categories": ["REGISTRY"],
+      "docker": {
+      "endpoint": "{{ _internal_image_registry_route }}",
+      "username": "{{ _internal_service_account }}",
+      "password": "{{ _internal_service_account_token }}",
+      "insecure": true
+      },
+      "skipTestIntegration": false
+      }
+
+
