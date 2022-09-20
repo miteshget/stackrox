@@ -45,7 +45,7 @@
     body: {"name":"admin","role":"Admin"}
   register: r_uri
 
- - name: Set stackrox token
+- name: Set stackrox token
   set_fact:
     _internal_central_stackrox_token: "{{ r_uri.json.token }}"
 
@@ -79,7 +79,7 @@
       Content-Type: application/json
     body: >-
       {
-      "name": "test2",
+      "name": "registry-admin",
       "type": "docker",
       "categories": ["REGISTRY"],
       "docker": {
