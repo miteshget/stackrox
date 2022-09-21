@@ -95,5 +95,8 @@
       },
       "skipTestIntegration": false
       }
+  register: r_stackrox_imagestream
+
+- debug: var=r_stackrox_imagestream
 
 
