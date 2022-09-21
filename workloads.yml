@@ -1,12 +1,11 @@
-- name: Create service account
+---
+- name: Create objects from templates
   k8s:
-    api_version: v1
-    kind: ServiceAccount
-    name: "{{ _internal_service_account }}"
-    namespace: "{{ _internal_service_account_namespace }}"
-
-- name: Add role
-  command: oc adm policy add-role-to-user registry-admin system:serviceaccount:{{ _internal_service_account_namespace }}:{{ _internal_service_account }}
+    state: present
+    definition: "{{ lookup('template', item ) | from_yaml }}"
+  loop:
+    - ./templates/service-account-create.yaml.j2
+    - ./templates/service-account-rolebinding.yaml.j2
 
 - name: Get service account token
   shell: oc sa get-token {{ _internal_service_account }} -n {{ _internal_service_account_namespace }}
@@ -53,18 +52,10 @@
 - debug: var=_internal_image_registry_route
 - debug: var=_internal_central_stackrox_token
 
-- name: Create secret
+- name: Create stackrox secret
   k8s:
     state: present
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
-        name: stackrox-token
-        namespace: cicd
-      type: Opaque
-      data:
-        token: "{{ _internal_central_stackrox_token | string | b64encode }}"
+    definition: "{{ lookup('template', './templates/stackrox-token-secret.yaml.j2' ) | from_yaml }}"
 
 - name: Stackrox imagesteam integration
   uri:
@@ -79,7 +70,7 @@
       Content-Type: application/json
     body: >-
       {
-      "name": "registry-admin",
+      "name": "registry-admin-{{ guid }}",
       "type": "docker",
       "categories": ["REGISTRY"],
       "docker": {
