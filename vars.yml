@@ -1,3 +1,5 @@
+---
+guid: "{{ lookup('env', 'GUID') }}"
 _internal_service_account: registry-admin
 _internal_service_account_registry_role: registry-admin
 _internal_service_account_namespace: openshift-config
