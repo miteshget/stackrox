@@ -8,7 +8,10 @@
     - ./templates/service-account-rolebinding.yaml.j2
 
 - name: Get service account token
-  shell: oc sa get-token {{ _internal_service_account }} -n {{ _internal_service_account_namespace }}
+  command: >-
+    oc sa 
+    get-token {{ _internal_service_account }}
+    -n {{ _internal_service_account_namespace }}
   register: r_token
 
 - name: Set SA token
@@ -17,7 +20,11 @@
 
 # Registry
 - name: Expose registry
-  command: oc patch configs.imageregistry.operator.openshift.io/cluster --type=merge --patch '{"spec":{"defaultRoute":true}}'
+  command: >- 
+    oc patch 
+    configs.imageregistry.operator.openshift.io/cluster
+    --type=merge 
+    --patch '{"spec":{"defaultRoute":true}}'
 
 - name: Get route
   k8s_info:
@@ -48,9 +55,16 @@
   set_fact:
     _internal_central_stackrox_token: "{{ r_uri.json.token }}"
 
-- debug: var=_internal_service_account_token
-- debug: var=_internal_image_registry_route
-- debug: var=_internal_central_stackrox_token
+- debug: 
+    var: _internal_service_account_token
+    verbosity: 2
+- debug:
+    var: _internal_image_registry_route
+    verbosity: 2
+
+- debug: 
+    var: _internal_central_stackrox_token
+    verbosity: 2
 
 - name: Create stackrox secret
   k8s:
